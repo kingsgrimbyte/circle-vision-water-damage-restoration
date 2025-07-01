@@ -1,18 +1,27 @@
 import Image from "next/image";
 import Link from "next/link";
 import { RiMapPin2Fill } from "react-icons/ri";
-import content from "@/components/Content/servicePage.json";
-import ContactInfo from "@/components/Content/ContactInfo.json";
 import { headers } from "next/headers";
-import SubDomainData from "@/components/Content/subDomainUrlContent.json";
+
+import subdomainContent from "@/app/Data/FinalContent";
+import contactContent from "@/app/Data/content";
+
+const SubDomainData: any = subdomainContent.subdomainData;
+const ContactInfo: any = contactContent.contactContent;
+const content: any = contactContent.servicePageContent;
 const Footer = () => {
   const headersList = headers();
-const subdomain = headersList.get("x-subdomain") as string | null;
-const data = content?.serviceData;
-const subdomainData = subdomain ? SubDomainData[subdomain as keyof typeof SubDomainData] : undefined;
-const address = subdomainData && "address" in subdomainData ? (subdomainData as { address: string }).address : undefined;
+  const subdomain = headersList.get("x-subdomain") as string | null;
+  const data = content?.serviceData;
+  const subdomainData = subdomain
+    ? SubDomainData[subdomain as keyof typeof SubDomainData]
+    : undefined;
+  const address =
+    subdomainData && "address" in subdomainData
+      ? (subdomainData as { address: string }).address
+      : undefined;
   return (
-    <div className=" flex w-full items-center justify-center bg-[#eeecec]">
+    <div className="flex w-full items-center justify-center bg-[#eeecec]">
       <div className=" flex w-full  items-center justify-center overflow-hidden">
         <div className=" flex w-full flex-col items-center  justify-center md:mt-8 md:min-w-[650px] ">
           <div className="flex w-fit flex-col justify-center gap-2 px-6 md:mt-8  md:w-full  md:flex-row md:items-start md:justify-around md:px-20 ">
@@ -23,11 +32,11 @@ const address = subdomainData && "address" in subdomainData ? (subdomainData as 
                 width={10000}
                 className="w-full object-cover "
                 alt={
-                  ContactInfo.logoImage.split("/").pop()?.split(".")[0] ||
+                  ContactInfo.logoImage?.split("/").pop()?.split(".")[0] ||
                   "image"
                 }
                 title={
-                  ContactInfo.logoImage.split("/").pop()?.split(".")[0] ||
+                  ContactInfo.logoImage?.split("/").pop()?.split(".")[0] ||
                   "image"
                 }
               />
@@ -46,9 +55,6 @@ const address = subdomainData && "address" in subdomainData ? (subdomainData as 
                 <Link href="/our-brands">
                   <p className="">Our Brands </p>
                 </Link>
-                <Link href={`${ContactInfo?.baseUrl}blogs`}>
-                  <p className="">Blogs </p>
-                </Link>
               </div>
             </div>
             <div className="mt-10  flex flex-col items-center   justify-center text-lg md:mt-0  md:w-[26rem]">
@@ -57,7 +63,7 @@ const address = subdomainData && "address" in subdomainData ? (subdomainData as 
               </div>
               <div className="mt-6 flex  flex-col gap-2  text-center">
                 {data.lists.map(
-                  (list) =>
+                  (list: any) =>
                     list.title && (
                       <Link href={`/services/${list.slug}`} key={list.title}>
                         <p className="">
@@ -101,7 +107,7 @@ const address = subdomainData && "address" in subdomainData ? (subdomainData as 
               </div>
             </div>
           </div>
-          <div className="mx-9 mt-10 flex border-t-2 border-minor text-center  text-lg text-main ">
+          <div className="mx-9 mb-14 mt-10 flex border-t-2 border-minor text-center  text-lg text-main ">
             <p className="my-2">
               Copyright ©2025 {ContactInfo?.name}, All Right Reserved |
               <Link
@@ -114,7 +120,6 @@ const address = subdomainData && "address" in subdomainData ? (subdomainData as 
           </div>
         </div>
       </div>
-      {/*  cursor-default   bg-[#151627] grid place-items-center w-screen md:w-full min-w-[375px] */}
     </div>
   );
 };

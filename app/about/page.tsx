@@ -2,14 +2,15 @@ import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import { BiMailSend, BiSolidPhone, BiSolidTime } from "react-icons/bi";
-import { BsBookmarkStarFill, BsFillPatchCheckFill } from "react-icons/bs";
 import { FaCrown } from "react-icons/fa6";
 import Banner from "@/app/components/Home/Banner";
 import contentData from "@/components/Content/about.json"
-import ContactInfo from '@/components/Content/ContactInfo.json'
 import Navbar from "../components/Navbar";
 
+import contactContent from "@/app/Data/content";
+
+const ContactInfo: any = contactContent.contactContent;
+const aboutContent: any = contactContent.aboutContent;
 
 export const metadata: Metadata = {
   title: {

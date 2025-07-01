@@ -1,9 +1,10 @@
 import React from "react";
 import { FaPhoneSquareAlt } from "react-icons/fa";
-import ContactInfo from "@/components/Content/ContactInfo.json";
-import home from "@/components/Content/home.json";
 
+import contactContent from "@/app/Data/content";
 
+const ContactInfo: any = contactContent.contactContent;
+const home: any = contactContent.homePageContent;
 const HourCta = () => {
   const data = home?.hourCtaWidget;
   return (
@@ -12,13 +13,13 @@ const HourCta = () => {
         <div className=" w-full overflow-hidden  px-4 py-5 md:px-20 ">
           <div className="flex flex-col  items-start  justify-center gap-10 text-white ">
             <div
-              className="w-full pt-4 text-center text-xl font-semibold leading-snug  md:pt-0 md:text-[38px] "
+              className="w-full pt-4 text-center text-xl font-semibold leading-snug  md:pt-0 md:text-[35px] "
               dangerouslySetInnerHTML={{ __html: data.title }}
             ></div>
             <a
               id="cta-id"
               href={`tel:${ContactInfo.tel}`}
-              className="flex    w-full justify-center px-0 md:text-4xl"
+              className="flex    w-full justify-center px-0 md:text-xl"
             >
               <div
                 id="cta-id"

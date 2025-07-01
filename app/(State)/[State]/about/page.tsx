@@ -6,10 +6,14 @@ import { BiMailSend, BiSolidPhone, BiSolidTime } from "react-icons/bi";
 import { BsBookmarkStarFill, BsFillPatchCheckFill } from "react-icons/bs";
 import { FaCrown } from "react-icons/fa6";
 import Banner from "@/app/components/Home/Banner";
-import contentData from "@/components/Content/about.json";
-import ContactInfo from "@/components/Content/ContactInfo.json";
-import content from "@/components/Content/subDomainUrlContent.json";
 import NavbarState from "@/app/components/State/NavbarState";
+import contactContent from "@/app/Data/content";
+import subdomainContent from "@/app/Data/FinalContent";
+
+const content: any = subdomainContent.subdomainData;
+const ContactInfo: any = contactContent.contactContent;
+const contentData: any = contactContent.aboutContent;
+
 interface AboutProps {
   subdomain: string;
 }

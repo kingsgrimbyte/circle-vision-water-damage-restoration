@@ -2,18 +2,20 @@ import Image from "next/image";
 import Banner from "./Banner";
 import WhyChoose from "./WhyChoose";
 import HourCta from "./HourCta";
-import homeData from "@/components/Content/home.json";
 import Faq from "./Faq";
 import Service from "@/app/components/Home/Service";
 import Affordable from "./Affordable";
 import ProcessWidget from "../Widgets/ProcessWidget";
-import AreaWeServe from "../Widgets/AreaWeServe";
-import content from "@/components/Content/subDomainUrlContent.json";
 import ReviewWidget from "../Widgets/ReviewWidget";
 import Navbar from "../Navbar";
-import ContactInfo from "@/components/Content/ContactInfo.json";
 import Link from "next/link";
-// import PortaPottyCalculator from "../Widgets/Calculator";
+
+import contactContent from "@/app/Data/content";
+import SubdomainContent from "@/app/Data/FinalContent";
+
+const ContactInfo: any = contactContent.contactContent;
+const homeData: any = contactContent.homePageContent;
+const content: any = SubdomainContent.subdomainData;
 
 const Hero = () => {
   const cityData: any = content;
@@ -28,8 +30,11 @@ const Hero = () => {
             h1={homeData.h1Banner}
             image={homeData.bannerImage}
             header={homeData.bannerQuote}
-            p1={`${homeData?.metaDescription?.split("[location]").join( ContactInfo.location)
-                        ?.split("[phone]").join(ContactInfo.No)}.`}
+            p1={`${homeData?.metaDescription
+              ?.split("[location]")
+              .join(ContactInfo.location)
+              ?.split("[phone]")
+              .join(ContactInfo.No)}`}
           />
           {/* poster */}
           {/* Section 1 */}
@@ -92,10 +97,9 @@ const Hero = () => {
             </div>
           </div>
           {/* Section 1 */}
-          {/* <PortaPottyCalculator/> */}
           {/* Area we Serve */}
           <div className="mx-auto mt-14 max-w-[95rem] md:mt-20">
-            <div className="mt-10 flex md:h-96 rounded-xl  bg-white  shadow-2xl md:mb-10">
+            <div className="mt-10 flex rounded-xl bg-white  shadow-2xl  md:mb-10 md:h-96">
               <div className="md:w-[87%]">
                 <div className="mt-4 p-1 text-center text-2xl font-bold text-main">
                   We Proudly Serve{" "}

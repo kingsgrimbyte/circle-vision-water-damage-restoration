@@ -3,7 +3,10 @@ import { notFound } from "next/navigation";
 import content from "@/components/Content/subDomainUrlContent.json";
 import Banner from "@/app/components/Home/Banner";
 import Service from "@/app/components/Home/Service";
-import ContactInfo from "@/components/Content/ContactInfo.json";
+import contactContent from "@/app/Data/content";
+
+const ContactInfo: any = contactContent.contactContent;
+
 import Faq from "@/app/components/Home/Faq";
 import HourCta from "@/app/components/Home/HourCta";
 import ReviewWidget from "@/app/components/Widgets/ReviewWidget";
@@ -11,8 +14,6 @@ import AreaWeServe from "@/app/components/Widgets/AreaWeServe";
 import Affordable from "@/app/components/Home/Affordable";
 import ProcessWidget from "@/app/components/Widgets/ProcessWidget";
 import NavbarState from "@/app/components/State/NavbarState";
-import { headers } from "next/headers";
-import PortaPottyCalculator from "@/app/components/Widgets/Calculator";
 import Link from "next/link";
 import ZipAndNeighAccordian from "@/app/components/Home/ZipAndNeighAccordian";
 // import Service from "@/app/Components/Service";
@@ -414,7 +415,7 @@ export default function SubdomainPage({ params }: SubdomainPageProps) {
         ) : null}
         {/* Season Section */}
         <ProcessWidget />
-        <PortaPottyCalculator/>
+        
         {/* Cta */}
         <div className="mt-14 md:mt-28">
           <HourCta />
