@@ -16,7 +16,6 @@ export async function GET() {
     `${contentData.baseUrl}contact`,
     `${contentData.baseUrl}subdomains/sitemap.xml`,
     `${contentData.baseUrl}blogs/sitemap.xml`,
-    ...SubDomain.map((location: any) => `https://${location}.${contentData.host}`)
   ];
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>

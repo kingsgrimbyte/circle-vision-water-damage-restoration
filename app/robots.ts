@@ -42,6 +42,7 @@ export default function robots(): MetadataRoute.Robots {
           "/_next/",
           "/static/",
           "/*.json$",
+          "/*.xml$",
           ...subDomains.map((subdomain) => `/${subdomain}/${subdomain}`), // Disallow duplicate subdomain paths
         ],
       },

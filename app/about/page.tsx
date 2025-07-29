@@ -14,7 +14,8 @@ const aboutContent: any = contactContent.aboutContent;
 
 export const metadata: Metadata = {
   title: {
-    absolute: contentData.metaTitle,
+    absolute: contentData.metaTitle?.split("[location]").join( ContactInfo.location)
+            ?.split("[phone]").join(ContactInfo.No),
   },
   description: contentData.metaDescription?.split("[location]").join( ContactInfo.location)
             ?.split("[phone]").join(ContactInfo.No),
