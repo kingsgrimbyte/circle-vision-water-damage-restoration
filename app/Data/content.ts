@@ -1,6 +1,4 @@
 import aboutData from "@/components/Content/about.json";
-import blogDataJson  from "@/components/Content/blogs.json";
-import blogCategoryMetaJson  from "@/components/Content/blogsCategoryMetas.json";
 import contactPageDataJson  from "@/components/Content/contact.json";
 import contactDataJson from "@/components/Content/ContactInfo.json";
 import homePageDataJson  from "@/components/Content/home.json";
@@ -71,14 +69,6 @@ const aboutContent: any = {
   areaweserveSection,
 };
 
-// Blogs Content
-const blogContent: any = {
-  posts: Array.isArray(blogDataJson) ? blogDataJson : [],
-};
-
-// Blogs Category Content
-const blogCategoryMetaMap: any =
-  (blogCategoryMetaJson as any) || {};
 
 // Contact Page Content
 const {
@@ -236,47 +226,22 @@ const servicePageContent: any = {
 };
 
 
-// Utility function to replace placeholders in strings
-function replacePlaceholders(obj: any, ContactInfo: any): any {
-  if (typeof obj === "string") {
-    return obj
-      .split("[location]").join(ContactInfo.location)
-      .split("[phone]").join(ContactInfo.No);
-  } else if (Array.isArray(obj)) {
-    return obj.map(item => replacePlaceholders(item, ContactInfo));
-  } else if (obj && typeof obj === "object") {
-    const result: any = {};
-    for (const key in obj) {
-      result[key] = replacePlaceholders(obj[key], ContactInfo);
-    }
-    return result;
-  }
-  return obj;
-}
-
-// Use contactContent as ContactInfo for replacements
-const ContactInfo = contactContent;
-
 const content: {
   aboutContent: any;
   contactContent: any;
-  blogContent: any;
-  blogCategoryMetaMap: any;
   contactPageContent: any;
   homePageContent: any;
   locationPageContent: any;
   brandsContent: any;
   servicePageContent: any;
 } = {
-  aboutContent: replacePlaceholders(aboutContent, ContactInfo),
-  contactContent: replacePlaceholders(contactContent, ContactInfo),
-  blogContent: replacePlaceholders(blogContent, ContactInfo),
-  blogCategoryMetaMap: replacePlaceholders(blogCategoryMetaMap, ContactInfo),
-  contactPageContent: replacePlaceholders(contactPageContent, ContactInfo),
-  homePageContent: replacePlaceholders(homePageContent, ContactInfo),
-  locationPageContent: replacePlaceholders(locationPageContent, ContactInfo),
-  brandsContent: replacePlaceholders(brandsContent, ContactInfo),
-  servicePageContent: replacePlaceholders(servicePageContent, ContactInfo),
+  aboutContent,
+  contactContent,
+  contactPageContent,
+  homePageContent,
+  locationPageContent,
+  brandsContent,
+  servicePageContent,
 };
 
 export default content;
