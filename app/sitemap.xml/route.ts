@@ -22,8 +22,6 @@ export async function GET() {
 </sitemapindex>`;
 
   return new NextResponse(xml, {
-    headers: {
-      "Content-Type": "application/xml",
-    },
+    headers: { "Content-Type": "application/xml" },
   });
 }
