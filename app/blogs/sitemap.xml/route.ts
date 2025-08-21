@@ -29,7 +29,7 @@ export async function GET(request: Request) {
 
     // Generate XML entries for each blog
     const blogUrls = blogs.map((blog: any) => {
-      const url = `${contactInfo.baseUrl}blogs/${blog.catagory}/${blog.slug}`;
+      const url = `${contactInfo.baseUrl}blogs/${blog.category}/${blog.slug}`;
       return `\n  <url>\n    <loc>${url}</loc>\n    <lastmod>${blog.publishedAt}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>`;
     }).join('');
 
