@@ -6,15 +6,15 @@ export default function sitemapIndex(): MetadataRoute.Sitemap {
 
   return [
     {
-      url: `${baseUrl}sitemap-main/sitemap.xml`,
+      sitemap: `${baseUrl}sitemap-main/sitemap.xml`,
       lastModified: new Date(),
     },
     {
-      url: `${baseUrl}sitemap-blogs/sitemap.xml`,
+      sitemap: `${baseUrl}sitemap-blogs/sitemap.xml`,
       lastModified: new Date(),
     },
     {
-      url: `${baseUrl}sitemap-subdomains/sitemap.xml`,
+      sitemap: `${baseUrl}sitemap-subdomains/sitemap.xml`,
       lastModified: new Date(),
     },
   ];
