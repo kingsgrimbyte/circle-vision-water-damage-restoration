@@ -30,7 +30,7 @@ export async function GET() {
 
   const blogURL = blogs.map((url: any) => `
     <url>
-      <loc>${contentData.baseUrl}/blogs/${url.category}/${url.slug}/</loc>
+      <loc>${contentData.baseUrl}blogs/${url.category}/${url.slug}/</loc>
       <lastmod>${new Date().toISOString()}</lastmod>
     </url>
   `).join("");
