@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 import serviceData from "@/components/Content/servicePage.json";
-import { NextRequest } from 'next/server';
+import contentData from "@/components/Content/ContactInfo.json";
 
-export async function GET(req: NextRequest) {
-  const { protocol, host } = req.nextUrl;
-  const baseUrl = `${protocol}//${host}`;
+export async function GET() {
+  const baseUrl = contentData.baseUrl;
 
   const ServiceSlug: string[] = serviceData.serviceData.lists.map(
     (item: any) => item.slug
