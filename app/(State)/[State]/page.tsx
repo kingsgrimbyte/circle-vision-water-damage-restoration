@@ -1,11 +1,14 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import content from "@/components/Content/subDomainUrlContent.json";
 import Banner from "@/app/components/Home/Banner";
 import Service from "@/app/components/Home/Service";
 import contactContent from "@/app/Data/content";
+import subdomainContent from "@/app/Data/FinalContent";
 
 const ContactInfo: any = contactContent.contactContent;
+const content: any = subdomainContent.subdomainData;
+const home: any = contactContent.homePageContent;
+
 
 import Faq from "@/app/components/Home/Faq";
 import HourCta from "@/app/components/Home/HourCta";
@@ -117,7 +120,13 @@ export default function SubdomainPage({ params }: SubdomainPageProps) {
   }
   // nity or db query us particular subdomain read data from database .... neeche theme nu pass hoyega and page render hojaega
   // Render subdomain-specific content
-  const ContentData = cityData[State];
+ const ContentData = JSON.parse(
+    JSON.stringify(cityData[State])
+      .split("[location]")
+      .join(ContactInfo.location)
+      .split("[phone]")
+      .join(ContactInfo.No),
+  );
   const slugs: any = Object.keys(cityData)
     .filter((key) => key !== State)
     .map((key) => cityData[key]);
@@ -174,6 +183,17 @@ export default function SubdomainPage({ params }: SubdomainPageProps) {
             ratingValue: 4.802,
           },
         },
+         {
+        "@type": "FAQPage",
+        mainEntity: ContentData.faq.map((faq: any) => ({
+          "@type": "Question",
+          name: faq?.ques?.split("[location]").join(State),
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: faq?.ans?.split("[location]").join(State),
+          },
+        })),
+      },
       ],
     };
   
@@ -552,7 +572,7 @@ export default function SubdomainPage({ params }: SubdomainPageProps) {
       ) : null}
       {/* Zip */}
         {/* FAQ */}
-        {ContentData?.faq ? <Faq value={State} /> : null}
+        {ContentData?.faq ? <Faq data={ContentData?.faq} value={`${ContentData.name}, ${abbrevations.toUpperCase()}`}/> : null}
         {/* FAQ */}
         {/* CounterCta */}
         {/* CounterCta */}

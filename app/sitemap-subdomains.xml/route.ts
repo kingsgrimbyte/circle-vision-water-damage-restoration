@@ -4,37 +4,29 @@ import contentData from "@/components/Content/ContactInfo.json";
 import subdomainMap from "@/components/Content/subDomainUrlContent.json";
 
 export async function GET() {
-  // Get the host without protocol or trailing slash
+  // Normalize the base host (no protocol, no trailing slash)
   const host = String(contentData.host)
     .replace(/^https?:\/\//, "")
     .replace(/\/$/, "");
 
-  const subdomains = Object.keys(subdomainMap); // e.g. ["tx", "ca", "ny", ...]
-
-  // Static paths you want for each subdomain
-  const staticPaths = ["/", "/about", "/services", "/contact"];
-
+  const subdomains = Object.keys(subdomainMap || {}); 
   const now = new Date().toISOString();
 
-  // Build <url> entries
-  const urls = subdomains
-    .flatMap((sd) =>
-      staticPaths.map(
-        (path) => `<url>
-  <loc>https://${sd}.${host}${path === "/" ? "" : path}</loc>
-  <lastmod>${now}</lastmod>
-  <changefreq>${path === "/" ? "weekly" : "monthly"}</changefreq>
-  <priority>${path === "/" ? "1.0" : "0.7"}</priority>
-</url>`
-      )
+  // Build <sitemap> entries pointing to each subdomain's sitemap.xml
+  const entries = subdomains
+    .map(
+      (sd) => `  <sitemap>
+    <loc>https://${sd}.${host}/sitemap.xml</loc>
+    <lastmod>${now}</lastmod>
+  </sitemap>`
     )
     .join("\n");
 
-  // Full XML response
+  // Full XML response as a sitemap index
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls}
-</urlset>`;
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${entries}
+</sitemapindex>`;
 
   return new NextResponse(xml, {
     headers: { "Content-Type": "application/xml" },

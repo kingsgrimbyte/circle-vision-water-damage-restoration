@@ -6,22 +6,24 @@ export async function GET() {
   const baseUrl = contentData.baseUrl;
 
   const ServiceSlug: string[] = serviceData.serviceData.lists.map(
-    (item: any) => item.slug
+    (item: any) => item.slug,
   );
 
-  const ServiceURL = ServiceSlug.map((location) => `
+  const ServiceURL = ServiceSlug.map(
+    (location) => `
     <url>
       <loc>${baseUrl}services/${location}/</loc>
       <lastmod>${new Date().toISOString()}</lastmod>
       <changefreq>weekly</changefreq>
       <priority>0.7</priority>
     </url>
-  `).join("");
+  `,
+  ).join("");
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>${baseUrl}/</loc>
+    <loc>${baseUrl}</loc>
     <lastmod>${new Date().toISOString()}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>

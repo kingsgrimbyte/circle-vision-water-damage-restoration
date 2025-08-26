@@ -18,14 +18,19 @@ export default function robots(): MetadataRoute.Robots {
   const makeUrl = (h: string) => `${proto}://${h}${port ? `:${port}` : ""}`;
 
   if (onSubdomain) {
-    // Robots for subdomain (e.g., chino-ca.example.com)
+    // Robots for subdomain (e.g., alameda-ca.example.com)
+    // Dynamically block the mirrored path on this subdomain: /<subdomain>/ and /<subdomain>
     const origin = makeUrl(hostnameNoPort);
+    const mirroredPathBlocks = [`/${firstLabel}/`, `/${firstLabel}`];
+
     return {
-      rules: [{
-        userAgent: "*",
-        allow: "/",
-        disallow: ["/_next/", "/static/", "/*?*"],
-      }],
+      rules: [
+        {
+          userAgent: "*",
+          allow: "/",
+          disallow: ["/_next/", "/static/", "/*?*", ...mirroredPathBlocks],
+        },
+      ],
       sitemap: `${origin}/sitemap.xml`,
       host: host,
     };
@@ -33,18 +38,20 @@ export default function robots(): MetadataRoute.Robots {
 
   // Robots for main domain (www or apex)
   const rootNoWww = hostnameNoPort.replace(/^www\./, "");
-  const subSitemaps = allowed.map(sd => `${makeUrl(`${sd}.${rootNoWww}`)}/sitemap.xml`);
+  const subSitemaps = allowed.map((sd) => `${makeUrl(`${sd}.${rootNoWww}`)}/sitemap.xml`);
 
   const origin = makeUrl(hostnameNoPort);
   return {
-    rules: [{
-      userAgent: "*",
-      allow: "/",
-      // Block state-prefixed mirrors to avoid dupes on the main host
-      disallow: ["/_next/", "/static/", ...allowed.map(sd => `/${sd}/`)],
-    }],
+    rules: [
+      {
+        userAgent: "*",
+        allow: "/",
+        // Block state-prefixed mirrors to avoid dupes on the main host
+        disallow: ["/_next/", "/static/", ...allowed.map((sd) => `/${sd}/`)],
+      },
+    ],
     // Point to main site’s sitemap AND every subdomain’s sitemap
-    sitemap: [ `${origin}/sitemap.xml`, ...subSitemaps ],
+    sitemap: `${origin}/sitemap.xml`,
     host: host,
   };
 }

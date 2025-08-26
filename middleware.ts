@@ -19,18 +19,10 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 1) Block all sitemaps on subdomains
-  //    Matches /sitemap.xml, /sitemap-*.xml, /blogs/sitemap.xml etc.
-  if (
-    allowedSubs.includes(subdomain) &&
-    /^\/(sitemap(?:-.+)?\.xml|blogs\/sitemap\.xml)$/.test(url.pathname)
-  ) {
-  url.pathname = "/__force-404";          // any unique path
-  return NextResponse.rewrite(url);       // lets the page set the 404 status + UI
-}
+
 
   // 2) Let the main domain serve robots and sitemap normally
-  if (/^\/(robots\.txt|sitemap(?:-.+)?\.xml|blogs\/sitemap\.xml)$/.test(url.pathname)) {
+  if (/^\/(robots\.txt|sitemap.xml|blogs\/sitemap\.xml)$/.test(url.pathname)) {
     const res = NextResponse.next();
     res.headers.set("x-subdomain", subdomain);
     return res;
