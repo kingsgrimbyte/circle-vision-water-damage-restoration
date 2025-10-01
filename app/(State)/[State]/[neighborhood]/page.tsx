@@ -16,7 +16,6 @@ import ZipAndNeighAccordian from "@/app/components/Home/ZipAndNeighAccordian";
 import contactContent from "@/app/Data/content";
 import subdomainContent from "@/app/Data/FinalContent";
 import { headers } from "next/headers";
-import PortaPottyCalculator from "@/app/components/Widgets/Calculator";
 
 const ContactInfo: any = contactContent.contactContent;
 const home: any = contactContent.homePageContent;
@@ -34,8 +33,8 @@ async function getSubdomainData() {
   return res.json().catch(() => ({}));
 }
 
-interface SubdomainPageProps {
-  params: { State: string };
+interface NeighborhoodPageProps {
+  params: { State: string; neighborhood: string };
 }
 const stateName: Record<string, string> = {
   AL: "Alabama",
@@ -90,8 +89,8 @@ const stateName: Record<string, string> = {
   WY: "Wyoming",
 };
 
-export async function generateMetadata({ params }: SubdomainPageProps) {
-  const { State } = params;
+export async function generateMetadata({ params }: NeighborhoodPageProps) {
+  const { State, neighborhood } = params;
 
   // Fetch content from API
   let content: any = {};
@@ -110,29 +109,49 @@ export async function generateMetadata({ params }: SubdomainPageProps) {
     // Fallback to static content if API fails
     content = subdomainContent.subdomainData;
   }
-
   const cityData: any = content;
-  const ContentData = cityData[State];
+  const parentCityData = cityData[State];
+  
+  // Format neighborhood name for display
+  const neighborhoodName = neighborhood
+  .split("-")
+  .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+  .join(" ");
+  const staetName = State
+  .split("-")
+  .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+  .join(" ");
+  
+  // Create neighborhood-specific metadata using parent city data
+  const title =
+    parentCityData?.metaTitle
+      ?.split(content[State].name)
+      .join(neighborhoodName)
+      ?.split("[phone]")
+      .join(ContactInfo.No) ||
+    `${ContactInfo.service} in ${neighborhoodName} - Call ${ContactInfo.No}`;
+
+  const description =
+    parentCityData?.metaDescription
+      ?.split(content[State].name)
+      .join(neighborhoodName)
+      ?.split("[phone]")
+      .join(ContactInfo.No) ||
+    `Professional ${ContactInfo.service} in ${neighborhoodName}. Fast delivery, competitive pricing, and reliable service. Call ${ContactInfo.No} for your dumpster rental needs.`;
 
   return {
-    title: ContentData?.metaTitle
-      ?.split("[location]")
-      .join(ContentData?.name || ContactInfo.location)
-      ?.split("[phone]")
-      .join(ContactInfo.No),
-    description: ContentData?.metaDescription
-      ?.split("[location]")
-      .join(ContentData?.name || ContactInfo.location)
-      ?.split("[phone]")
-      .join(ContactInfo.No),
+    title,
+    description,
     alternates: {
-      canonical: `https://${State}.${ContactInfo.host}`,
+      canonical: `https://${State}.${ContactInfo.host}/${neighborhood}/`,
     },
   };
 }
-export default async function SubdomainPage({ params }: SubdomainPageProps) {
-  // console.log(params)
-  const { State } = params;
+
+export default async function NeighborhoodPage({
+  params,
+}: NeighborhoodPageProps) {
+  const { State, neighborhood } = params;
 
   // Fetch content from API
   let content: any = {};
@@ -155,22 +174,52 @@ export default async function SubdomainPage({ params }: SubdomainPageProps) {
   const cityData: any = content;
   const abbrevations: any = State.split("-").pop();
 
-  // console.log(State)
   // Validate subdomain
   const subDomain = Object.keys(cityData);
   const validSubdomains = subDomain;
   if (!validSubdomains.includes(State)) {
     notFound();
   }
-  // nity or db query us particular subdomain read data from database .... neeche theme nu pass hoyega and page render hojaega
-  // Render subdomain-specific content
+
+  // Get parent city data
+  const parentCityData = cityData[State];
+  
+  // Validate neighborhood exists in the city's neighborhoods list
+  if (!parentCityData?.neighbourhoods) {
+    notFound();
+  }
+  
+  const validNeighborhoods = parentCityData.neighbourhoods
+    .split("|")
+    .map((n: string) => n.trim().toLowerCase().replace(/\.+$/, "").replace(/\s+/g, "-"));
+  
+  if (!validNeighborhoods.includes(neighborhood)) {
+    notFound();
+  }
+
+  // Format neighborhood name for display
+  const neighborhoodName = neighborhood
+    .split("-")
+    .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+  const stateName = State
+    .split("-")
+    .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
   const ContentData = JSON.parse(
-    JSON.stringify(cityData[State])
+    JSON.stringify(parentCityData)
       .split("[location]")
-      .join(ContactInfo.location)
+      .join(neighborhoodName)
       .split("[phone]")
-      .join(ContactInfo.No),
+      .join(ContactInfo.No)
+      .split(parentCityData?.name || State)
+      .join(neighborhoodName),
   );
+
+  // Update specific fields for neighborhood
+  ContentData.name = neighborhoodName;
+  ContentData.slug = neighborhood;
+
   const slugs: any = Object.keys(cityData)
     .filter((key) => key !== State)
     .map((key) => cityData[key]);
@@ -188,7 +237,7 @@ export default async function SubdomainPage({ params }: SubdomainPageProps) {
           streetAddress: `${stateName[abbrevations.toUpperCase()]} ${ContactInfo.service}`,
           addressLocality: `${ContentData?.name}, ${abbrevations.toUpperCase()}`,
           addressRegion: stateName[abbrevations.toUpperCase()],
-          postalCode: ContentData?.zipCodes.split("|")[0] || "",
+          postalCode: "",
           addressCountry: "US",
         },
         review: {
@@ -224,7 +273,7 @@ export default async function SubdomainPage({ params }: SubdomainPageProps) {
           .join(ContentData?.name || ContactInfo.location)
           ?.split("[phone]")
           .join(ContactInfo.No)}`,
-        url: `https://${State}.${ContactInfo.host}`,
+        url: `https://${State}.${ContactInfo.host}/${neighborhood}`,
         aggregateRating: {
           "@type": "AggregateRating",
           reviewCount: 7,
@@ -233,18 +282,19 @@ export default async function SubdomainPage({ params }: SubdomainPageProps) {
       },
       {
         "@type": "FAQPage",
-        mainEntity: ContentData.faq.map((faq: any) => ({
-          "@type": "Question",
-          name: faq?.ques?.split("[location]").join(State),
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: faq?.ans?.split("[location]").join(State),
-          },
-        })),
+        mainEntity:
+          ContentData.faq?.map((faq: any) => ({
+            "@type": "Question",
+            name: faq?.ques?.split("[location]").join(neighborhoodName),
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: faq?.ans?.split("[location]").join(neighborhoodName),
+            },
+          })) || [],
       },
     ],
   };
-  
+
   return (
     <div className="">
       <NavbarState />
@@ -258,17 +308,20 @@ export default async function SubdomainPage({ params }: SubdomainPageProps) {
       </section>
       <div className="mx-auto max-w-[2100px] overflow-hidden">
         <Banner
-          h1={`${ContentData.h1Banner?.split("[location]").join( ContentData?.name || ContactInfo.location)
-            ?.split("[phone]").join(ContactInfo.No)} ${ContentData.zipCodes && ContentData.zipCodes.split("|")[0]}`}
+          h1={`${ContentData.h1Banner
+            ?.split("[location]")
+            .join(ContentData?.name || ContactInfo.location)
+            ?.split("[phone]")
+            .join(ContactInfo.No)}`}
           image={ContentData.bannerImage}
           header={ContentData.bannerQuote}
-          p1={`${ContentData?.metaDescription?.split("[location]").join( ContentData?.name || ContactInfo.location)
-            ?.split("[phone]").join(ContactInfo.No)}.`}
+          p1={`${ContentData?.metaDescription
+            ?.split("[location]")
+            .join(ContentData?.name || ContactInfo.location)
+            ?.split("[phone]")
+            .join(ContactInfo.No)}.`}
         />
         {/* Section 1 */}
-        {/* <p>{subDomain.map((item:any)=>(
-        <p>{item}</p>
-      ))}</p> */}
         <div className="mt-14 grid w-full grid-cols-1 items-center  gap-6 px-6 md:mt-28 md:grid-cols-2 md:px-24">
           <div className=" h-full">
             <Image
@@ -276,7 +329,9 @@ export default async function SubdomainPage({ params }: SubdomainPageProps) {
               width={1000}
               src={`${ContentData?.h2Image}`}
               className="h-full w-full  rounded-lg object-cover shadow-lg"
-              alt={ContentData?.h2Image.split("/").pop()?.split(".")[0] || "image"}
+              alt={
+                ContentData?.h2Image.split("/").pop()?.split(".")[0] || "image"
+              }
             />
           </div>
           <div className=" flex w-full flex-col gap-3 ">
@@ -296,7 +351,8 @@ export default async function SubdomainPage({ params }: SubdomainPageProps) {
                 </h4>
                 <p>
                   Professional Residential {ContactInfo.service} in{" "}
-                  {ContentData?.name}, {State.split("-").pop()?.toUpperCase()}.
+                  {ContentData?.name}, {parentCityData?.name || State},{" "}
+                  {State.split("-").pop()?.toUpperCase()}.
                 </p>
               </div>
               <div className="rounded-lg bg-gray-100 p-4 shadow-lg">
@@ -305,6 +361,7 @@ export default async function SubdomainPage({ params }: SubdomainPageProps) {
                 </h4>
                 <p>
                   Commercial {ContactInfo.service} in {ContentData?.name},{" "}
+                  {parentCityData?.name || State},{" "}
                   {State.split("-").pop()?.toUpperCase()}.
                 </p>
               </div>
@@ -381,8 +438,12 @@ export default async function SubdomainPage({ params }: SubdomainPageProps) {
                 width={10000}
                 src={`${ContentData.h5Image}`}
                 className=" h-[16rem] w-full rounded-lg object-cover shadow-lg"
-                alt={ContentData.h5Image.split("/").pop()?.split(".")[0] || "image"}
-                title={ContentData.h5Image.split("/").pop()?.split(".")[0] || "image"}
+                alt={
+                  ContentData.h5Image.split("/").pop()?.split(".")[0] || "image"
+                }
+                title={
+                  ContentData.h5Image.split("/").pop()?.split(".")[0] || "image"
+                }
               />
             </div>
           </div>
@@ -397,7 +458,10 @@ export default async function SubdomainPage({ params }: SubdomainPageProps) {
                 width={10000}
                 src={`${ContentData?.h6Image}`}
                 className=" h-[17rem] w-full rounded-lg object-cover  shadow-lg"
-                alt={ContentData?.h6Image.split("/").pop()?.split(".")[0] || "image"}
+                alt={
+                  ContentData?.h6Image.split("/").pop()?.split(".")[0] ||
+                  "image"
+                }
                 title={`${ContentData.h6Image.split("/").pop()?.split(".")[0] || "image"} ,${ContentData.name}`}
               />
             </div>
@@ -483,7 +547,6 @@ export default async function SubdomainPage({ params }: SubdomainPageProps) {
         ) : null}
         {/* Season Section */}
         <ProcessWidget />
-        
         {/* Cta */}
         <div className="mt-14 md:mt-28">
           <HourCta />
@@ -505,7 +568,10 @@ export default async function SubdomainPage({ params }: SubdomainPageProps) {
               <Image
                 src={`${ContentData?.h7Image}`}
                 className="h-[100%] w-full rounded-lg border object-cover shadow-lg "
-                alt={ContentData?.h7Image.split("/").pop()?.split(".")[0] || "image"}
+                alt={
+                  ContentData?.h7Image.split("/").pop()?.split(".")[0] ||
+                  "image"
+                }
                 width={1000}
                 height={500}
               />
@@ -552,84 +618,59 @@ export default async function SubdomainPage({ params }: SubdomainPageProps) {
           </div>
         )}
         {/* Neighborhood */}
-   {ContentData?.neighbourhoods ? (
+        {ContentData?.neighbourhoods ? (
           <div className="">
             <div className="block border px-4 md:hidden">
               <ZipAndNeighAccordian
                 ques={`Neighborhoods we serve in  ${ContentData?.name}`}
                 ans={ContentData?.neighbourhoods?.split("|")}
-                slug={ContentData?.slug}
+                slug={State}
                 neighborhood={true}
               />
             </div>
             <div className="mt-28 hidden items-center justify-start md:mx-40 md:block ">
               <div className="text-center text-3xl font-bold">
                 <p className="text-main">
-                  Neighborhoods we serve in {ContentData?.name}
+                  Other Neighborhoods we serve in {parentCityData?.name}
                 </p>
               </div>
               <div className="mx-10 mt-4 flex h-fit w-auto flex-wrap justify-center gap-4">
-                {ContentData?.neighbourhoods?.split("|").map((item: any) => (
-                  <div className="" key={item}>
-                    <Link
-                      href={`/${
-                        item
-                          .trim()
-                          .toLowerCase()
-                          .replace(/\.+$/, "") // remove trailing dots
-                          .replace(/\s+/g, "-") // replace spaces with hyphens
-                      }`}
-                    >
-                      <p className="border bg-minor px-2 py-1 text-white duration-100 ease-in-out hover:text-main">
-                        {item}
-                      </p>
-                    </Link>
-                  </div>
-                ))}
+                {ContentData?.neighbourhoods
+                  ?.split("|")
+                  .filter(
+                    (item: string) => item.trim() !== ContentData?.name?.trim(),
+                  )
+                  .map((item: string) => (
+                    <div className="" key={item}>
+                      <Link
+                        href={`/${
+                          item
+                            .trim()
+                            .toLowerCase()
+                            .replace(/\.+$/, "") // remove trailing dots
+                            .replace(/\s+/g, "-") // replace spaces with hyphens
+                        }`}
+                      >
+                        <p className="border bg-minor px-2 py-1 text-white duration-100 ease-in-out hover:text-main">
+                          {item}
+                        </p>
+                      </Link>
+                    </div>
+                  ))}
               </div>
             </div>
           </div>
         ) : null}
-      {/* Neighborhood */}
-      {/* Zip */}
-      {ContentData?.zipCodes ? (
-        <div className="">
-          <div className="block border px-4 md:hidden">
-            <ZipAndNeighAccordian
-              ques={` Zip Codes we serve in ${ContentData?.name}`}
-              ans={ContentData?.zipCodes?.split("|")}
-              slug={ContentData?.slug}
-            />
-          </div>
-          <div className="mt-28 hidden items-center justify-start md:mx-40 md:block  ">
-            <div className="text-center text-3xl font-bold">
-              <p className="text-main">
-                Zip&nbsp;Codes we serve in {ContentData?.name}
-              </p>
-            </div>
-            <div className="mx-10 mt-4 flex h-fit w-auto flex-wrap justify-center gap-4">
-              {ContentData?.zipCodes?.split("|").map((item: any) => (
-                <div className="" key={item}>
-                  <Link
-                    target="_blank"
-                    href={`https://www.google.com/maps/search/?api=1&query=${item}, ${ContentData?.slug},`}
-                  >
-                    <p className="border bg-minor px-2 py-1 text-white duration-100 ease-in-out hover:text-main">
-                      {item}
-                    </p>
-                  </Link>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      ) : null}
-      {/* Zip */}
+        {/* Neighborhood */}
         {/* FAQ */}
-        {ContentData?.faq ? <Faq data={ContentData?.faq} value={`${ContentData.name}, ${abbrevations.toUpperCase()}`}/> : null}
+        {ContentData?.faq ? (
+          <Faq
+            data={ContentData?.faq}
+            value={`${ContentData.name}, ${abbrevations.toUpperCase()}`}
+          />
+        ) : null}
+
         {/* FAQ */}
-        {/* CounterCta */}
-        {/* CounterCta */}
         {/* Reviews */}
         <ReviewWidget value={State} />
         {/* Reviews */}
@@ -651,28 +692,39 @@ export default async function SubdomainPage({ params }: SubdomainPageProps) {
   );
 }
 
-export async function generateStaticParams() {
-  let content: any = {};
-  try {
-    const data = await getSubdomainData();
-    if (data && data.subdomains) {
-      // Convert array back to object with slug as key
-      content = data.subdomains.reduce((acc: any, item: any) => {
-        if (item.slug) {
-          acc[item.slug] = item;
-        }
-        return acc;
-      }, {});
-    }
-  } catch (e) {
-    // Fallback to static content if API fails
-    content = subdomainContent.subdomainData;
-  }
+// export async function generateStaticParams() {
+//   let content: any = {};
+//   try {
+//     const data = await getSubdomainData();
+//     if (data && data.subdomains) {
+//       // Convert array back to object with slug as key
+//       content = data.subdomains.reduce((acc: any, item: any) => {
+//         if (item.slug) {
+//           acc[item.slug] = item;
+//         }
+//         return acc;
+//       }, {});
+//     }
+//   } catch (e) {
+//     // Fallback to static content if API fails
+//     content = subdomainContent.subdomainData;
+//   }
 
-  const cityData: any = content;
-  const subDomain = Object.keys(cityData);
-  return subDomain.map((locations: any) => ({
-    State: locations.toString(),
-  }));
-}
+//   const cityData: any = content;
+//   const neighborhoods: any[] = [];
 
+//   // Extract neighborhoods only from cities that have valid slugs and neighborhoods
+//   Object.values(cityData).forEach((city: any) => {
+//     if (city.slug && city.neighbourhoods) {
+//       const cityNeighborhoods = city.neighbourhoods
+//         .split("|")
+//         .map((neighName: string) => ({
+//           State: city.slug,
+//           neighborhood: neighName.trim().toLowerCase().replace(/\s+/g, "-").replace(/\.+$/, ""),
+//         }));
+//       neighborhoods.push(...cityNeighborhoods);
+//     }
+//   });
+
+//   return neighborhoods;
+// }

@@ -53,6 +53,8 @@ const page = () => {
     return <div>Error: Invalid subdomain</div>;
   }
   const Data: any = content[subdomain];
+console.log(contentData.h1Banner)
+
   return (
     <div className="">
       <NavbarState />

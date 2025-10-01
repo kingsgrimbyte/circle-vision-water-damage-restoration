@@ -58,22 +58,35 @@ const Footer = () => {
                 <Link href={`${ContactInfo?.baseUrl}blogs`}>
                   <p className="">Blogs </p>
                 </Link>
+                <Link href={`${ContactInfo?.baseUrl}gallery`}>
+                  <p className="">Gallery </p>
+                </Link>
               </div>
             </div>
             <div className="mt-10  flex flex-col items-center   justify-center text-lg md:mt-0  md:w-[26rem]">
               <div className=" w-fit border-b-2 border-minor text-3xl font-semibold text-main">
                 Our Services
               </div>
-              <div className="mt-6 flex  flex-col gap-2  text-center">
-                {data.lists.map(
+              <div className="mt-6 flex flex-col gap-2 text-center">
+                {data.lists.slice(0, 4).map(
                   (list: any) =>
                     list.title && (
                       <Link href={`/services/${list.slug}`} key={list.title}>
                         <p className="">
-                          {list.title?.replace(`in ${ContactInfo.location}`, " ")}
+                          {list.title?.replace(
+                            `in ${ContactInfo.location}`,
+                            "",
+                          )}
                         </p>
                       </Link>
                     ),
+                )}
+                {data.lists.length > 4 && (
+                  <Link href="/services">
+                    <p className="font-semibold text-main underline">
+                      Show More
+                    </p>
+                  </Link>
                 )}
               </div>
             </div>

@@ -19,7 +19,7 @@ const NavbarState = () => {
         <div className=" relative w-screen md:w-full md:max-w-[1280px] md:px-10  md:py-4">
           <div className="mt-0 flex flex-row justify-between space-x-8 rounded-2xl rounded-tr-none px-4 text-sm font-medium md:mr-6 md:justify-around">
             <div className="flex ">
-              <Link href="/" aria-label="Home">
+              <Link href={ContactInfo?.baseUrl} aria-label="Home">
                 <Image
                   src={ContactInfo?.logoImage}
                   className="h-full w-40 object-contain md:mr-3 md:w-56"

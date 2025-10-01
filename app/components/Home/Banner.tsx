@@ -30,7 +30,6 @@ const Banner = ({
         <div className=" px-4 pt-4 font-bold leading-[50px] text-white md:mt-14 md:px-0 md:pt-40 lg:ml-40 lg:w-1/2 lg:pt-0">
           {" "}
           <div className="">
-            {header && header} <br />{" "}
             <h1 className={`inline text-white`}>{h1}</h1>
           </div>
           <div className="mt-6 text-xl font-normal">{p1 && `${p1} `}</div>
