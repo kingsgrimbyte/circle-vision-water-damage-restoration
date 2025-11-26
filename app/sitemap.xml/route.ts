@@ -145,7 +145,7 @@ export async function GET() {
     <lastmod>${now}</lastmod>
   </sitemap>
   <sitemap>
-    <loc>${baseUrl}blogs.xml</loc>
+    <loc>${baseUrl}sitemap-blogs.xml</loc>
     <lastmod>${now}</lastmod>
   </sitemap>
   <sitemap>

@@ -24,7 +24,7 @@ const Navbar = () => {
   ];
   return (
     <>
-      <nav className=" sticky   top-0 z-[999] flex h-[5rem]  w-screen items-center justify-center !overflow-hidden border-y-2 bg-white px-4 md:w-full md:px-0">
+      <nav className=" sticky   top-0 z-[999] flex h-[5rem]  w-screen items-center justify-center border-y-2 bg-white px-4 md:w-full md:px-0">
         <div className=" relative w-screen md:w-full md:max-w-[1280px] md:px-10  md:py-4">
           <div className="mt-0 flex flex-row justify-between space-x-8 rounded-2xl rounded-tr-none px-4 text-sm font-medium md:mr-6 md:justify-around">
             <div className="flex ">
